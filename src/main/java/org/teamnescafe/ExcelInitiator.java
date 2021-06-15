@@ -19,10 +19,11 @@ public class ExcelInitiator {
     public String find(String group) throws IOException {
         File myFolder = new File("D:\\ExcelFiles");
         StringBuffer surnameBuffer = new StringBuffer(surname);
-        surname = surnameBuffer.delete(0, 11).toString();
-        messageToSend = printTimetable(searchTimetable(surname, myFolder).getName());
-        if (messageToSend.equals("")) {
+        surname = surnameBuffer.delete(0, 12).toString();
+        if (searchTimetable(surname, myFolder) == null) {
             messageToSend = "Расписание не найдено";
+        } else {
+            messageToSend = printTimetable(searchTimetable(surname, myFolder).getName());
         }
         return messageToSend;
     }
@@ -70,7 +71,7 @@ public class ExcelInitiator {
                 String[] dataFromTheTable = new String[4];
                 for (int g = 0; g < dataFromTheTable.length; g++) {
                     dataFromTheTable[g] = getCellText(timetable.getSheetAt(0).getRow(j + i).getCell(indexColumn + g));
-                    if (dataFromTheTable[g].isEmpty()) {
+                    if (dataFromTheTable[g].isEmpty() || dataFromTheTable == null) {
                         dataFromTheTable[g] = "";
                     }
                     stringTimetable.append(dataFromTheTable[g]);
