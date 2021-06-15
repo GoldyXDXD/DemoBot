@@ -12,42 +12,29 @@ import java.io.IOException;
 
 public class ExcelInitiator {
     public String messageToSend = "";
-//    public int indexRowGroup;
-//    public int indexCellGroup;
+    public int indexColumn = 1; //первый столбец пока не используется
 
-    //public StringBuilder = new StringBuilder();
+    public StringBuilder stringTimetable = new StringBuilder();
 
     public String find(String group) throws IOException {
         File myFolder = new File("D:\\ExcelFiles");
-        File[] files = myFolder.listFiles();
-        for (int i = 0; i < files.length; i++) {
-            if (searchGroup(group, files[i].toString())) {
-//                messageToSend = printExcel(files[i].toString());
-                break;
-            }
-        }
+        StringBuffer surnameBuffer = new StringBuffer(surname);
+        surname = surnameBuffer.delete(0, 11).toString();
+        messageToSend = printTimetable(searchTimetable(surname, myFolder).getName());
         if (messageToSend.equals("")) {
             messageToSend = "Расписание не найдено";
         }
         return messageToSend;
     }
 
-    public boolean searchGroup(String group, String folder) throws IOException {
-        FileInputStream fileInputStream = new FileInputStream(folder);
-        Workbook wb = new XSSFWorkbook(fileInputStream);
-//        for (Row row : wb.getSheetAt(0)) {
-//            for (Cell cell : row) {
-//                Cell r = cell;
-//                if (getCellText(cell).equals(group)){
-//                    indexRowGroup = r.getRowIndex();
-//                    indexCellGroup = r.getColumnIndex();
-//                    test = 1;
-//                    break;
-//                }
-//            }
-//        }
-//        return test;
-//    }
+    private File searchTimetable(String surname, File folder) throws IOException {
+        File[] directoryFiles = folder.listFiles();
+        for (File file: directoryFiles) {
+            if (file.getName().startsWith(surname)) {
+                return file;
+            }
+        }
+        return null;
     }
     
     public String getCellText (Cell cell){
@@ -74,3 +61,22 @@ public class ExcelInitiator {
         }
         return result;
     }
+
+    private String printTimetable(String folder) throws IOException { // нужно будет исправить тройной цикл
+        FileInputStream fileInputStream = new FileInputStream(folder);
+        Workbook timetable = new XSSFWorkbook(fileInputStream);
+        for (int i = 1; i < 37; i = i + 6) { // с понедельника по субботу (каждый день занимает 6 строк)
+            for (int j = 0; j < 6; j++) {
+                String[] dataFromTheTable = new String[4];
+                for (int g = 0; g < dataFromTheTable.length; g++) {
+                    dataFromTheTable[g] = getCellText(timetable.getSheetAt(0).getRow(j + i).getCell(indexColumn + g));
+                    if (dataFromTheTable[g].isEmpty()) {
+                        dataFromTheTable[g] = "";
+                    }
+                    stringTimetable.append(dataFromTheTable[g]);
+                }
+            }
+        }
+        return stringTimetable.toString();
+    }
+}
