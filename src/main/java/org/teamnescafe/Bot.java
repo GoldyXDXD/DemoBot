@@ -40,12 +40,15 @@ public class Bot {
                 messages.forEach(message -> {
                     System.out.println(message.toString());
                     try {
-                        if (message.getText().equals("Привет")) {
-                            vkApiClient.messages().send(actor).message("Дарова, шизик. Для более удобного общения со мной напиши \"Кнопки\"").userId(message.getFromId()).randomId(random.nextInt(10000)).execute();
+                        if (message.getText().equals("Начать")) {
+                            vkApiClient.messages().send(actor).message("Ээээ, привет. Если нужно расписание, то введи фамилию человека, которого ты собираешься сталкерить, таким образом:\nРасписание: Имя").userId(message.getFromId()).randomId(random.nextInt(10000)).keyboard(keyboard).execute();
+                        } else if (message.getText().equals("Привет")) {
+                            vkApiClient.messages().send(actor).message("Дарова, шизик.").userId(message.getFromId()).randomId(random.nextInt(10000)).execute();
                         } else if (message.getText().equals("Ботяра, кто я?")) {
                             vkApiClient.messages().send(actor).message("Ты шизик, чел").userId(message.getFromId()).randomId(random.nextInt(10000)).execute();
-                        } else if (message.getText().equals("Кнопки")) {
-                            vkApiClient.messages().send(actor).message("Лови").userId(message.getFromId()).randomId(random.nextInt(10000)).keyboard(keyboard).execute();
+                        } else if (message.getText().matches("^[А-Я]{1}[а-я]{9}[:]{1} [А-Я]{1}[а-я]{1,8}$")) {
+                            ExcelInitiator excelInitiator = new ExcelInitiator();
+                            vkApiClient.messages().send(actor).message(excelInitiator.find(message.getText().toUpperCase())).userId(message.getFromId()).randomId(random.nextInt(10000)).execute();
                         } else {
                             vkApiClient.messages().send(actor).message("Боже, чееел, я обычный бот, не воспринимающий большинство сообщений. Кнопки и список сообщений для кого созданы?").userId(message.getFromId()).randomId(random.nextInt(10000)).execute();
                         }
